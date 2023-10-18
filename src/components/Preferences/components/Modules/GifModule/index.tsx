@@ -1,36 +1,17 @@
 import React from 'react'
-
 import { usePreferencesStore } from 'store/preferences'
 import { TBlendMode } from 'store/preferences/types'
-
-import { useDebounce } from 'hooks'
-
-import { Grid } from '@giphy/react-components'
-import { GiphyFetch } from '@giphy/js-fetch-api'
-
-import { AiOutlineSearch as SearchIcon, AiFillDelete as RemoveIcon } from 'react-icons/ai'
-
+import { AiOutlineCheck as CheckIcon, AiFillDelete as RemoveIcon } from 'react-icons/ai'
 import { Range } from 'components/Preferences/components/Range'
 import { Dialog } from 'components/Preferences/components/Dialog'
 import { IDialogActions } from 'components/Preferences/components/Dialog/types'
-
-import giphyLogo from './assets/giphy.gif'
-
 import { Container } from './styles'
-
-const apiKey = import.meta.env.VITE_GIPHY_API
-const gf = new GiphyFetch(apiKey)
 
 export const GifModule = () => {
   const preferencesStore = usePreferencesStore()
-
   const removeGifDialog = React.useRef<IDialogActions>(null)
 
-  const [searchTerm, setSearchTerm] = React.useState('')
-  const debouncedTerm = useDebounce(searchTerm, 1000)
-
-  const fetchGifs = (offset: number) =>
-    gf.search(debouncedTerm as string, { offset, limit: 10, type: 'gifs' })
+  const [gifUrl, setGifUrl] = React.useState('')
 
   const handleRemoveGif = () => {
     preferencesStore.removeGif()
@@ -142,23 +123,12 @@ export const GifModule = () => {
         <div className="searchInput">
           <input
             type="text"
-            defaultValue={searchTerm}
-            onChange={event => setSearchTerm(event.target.value)}
-            placeholder="search gif"
+            defaultValue={gifUrl}
+            onChange={event => setGifUrl(event.target.value)}
+            placeholder="Enter gif URL"
           />
-          <SearchIcon />
-          <img src={giphyLogo} height={36} />
+          <CheckIcon onClick={() => preferencesStore.updateGif({ url: gifUrl })} />
         </div>
-
-        <Grid
-          className="grid"
-          key={debouncedTerm as string}
-          width={window.innerWidth - 250}
-          columns={4}
-          noLink
-          fetchGifs={fetchGifs}
-          onGifClick={gif => preferencesStore.updateGif({ url: gif.images.original.mp4 })}
-        />
       </div>
 
       <Dialog
