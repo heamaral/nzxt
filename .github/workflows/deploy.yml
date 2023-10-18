@@ -23,15 +23,21 @@ jobs:
 
     - name: Build the project
       run: npm run build
+
+    - name: Set ownership for dist directory
+      run: sudo chown -R $(whoami) dist
+
+    - name: Configure Git
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git config --global --add safe.directory /github/workspace/dist
       
     - name: Deploy to page branch
       run: |
         cd dist
         git init
         git add -A
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git config --global --add safe.directory /github/workspace/dist
         git commit -m 'deploy'
         
     - name: Force push to destination branch
