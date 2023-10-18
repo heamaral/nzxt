@@ -25,7 +25,7 @@ jobs:
       run: npm run build
 
     - name: Fix ownership for dist directory
-      run: sudo chown -R $(whoami) dist
+      run: sudo chown -R runner:runner dist
       
     - name: Deploy to page branch
       run: |
